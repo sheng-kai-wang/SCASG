@@ -1,5 +1,5 @@
 from flask import Flask, request
-from sentencesHandler import sentences_handle
+from sentencesHandler import SentencesHandler
 
 app = Flask(__name__)
 
@@ -11,7 +11,7 @@ def introduction():
 
 @app.route('/generateSentences', methods=['POST'])
 def generateSentences():
-    return sentences_handle(request.data)
+    return SentencesHandler().get_nlu(request.data)
 
 
 if __name__ == '__main__':
