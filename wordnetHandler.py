@@ -12,11 +12,12 @@ nltk.download('averaged_perceptron_tagger')  # for tokenizing
 def wordnet_handler(data):
     data = yaml.load(data, Loader=yaml.FullLoader)
     for nlu in data['nlu']:
-        print(add_sentences(nlu))
+        add_sentences(nlu)
     return data
 
 
 def add_sentences(nlu):
+    examples = list()
     for sentence in nlu['examples']:
         synonyms_sentence = list()
         for token in nltk.wordpunct_tokenize(sentence):
@@ -35,8 +36,9 @@ def add_sentences(nlu):
             synonyms_sentence.append(synonyms)
         
         for sentence_word_list in list(itertools.product(*synonyms_sentence)):
-            print(' '.join(word for word in sentence_word_list))
-            
-        print()
+            examples.append(' '.join(word for word in sentence_word_list))
+        
+        # print(examples)
+        # print()
 
-    return nlu
+    nlu['examples'] = examples
