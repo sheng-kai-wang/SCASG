@@ -1,0 +1,71 @@
+nlu:
+- intent: get_api_v2_venues_explore
+  examples:
+  - I want to get explore about venues
+  - Get explore of attractions
+  - I want to get v2_venues_explore
+  - I want to use v2_venues_explore
+- intent: parameters_list_v2_venues_explore
+  examples:
+  - I want to see the explore of venues parameters list
+  - explore parameters list
+  - I want to see the v2_venues_explore parameters list
+  - see the v2_venues_explore parameters list
+- intent: get_api_v2_venues_{VENUE_ID}_nextvenues
+  examples:
+  - I want to get next venues
+  - Get next attractions
+  - I want to get v2_venues_{VENUE_ID}_nextvenues
+  - I want to use v2_venues_{VENUE_ID}_nextvenues
+- intent: parameters_list_v2_venues_{VENUE_ID}_nextvenues
+  examples:
+  - I want to see the next venues parameters list
+  - next venues parameters list
+  - I want to see the v2_venues_{VENUE_ID}_nextvenues parameters list
+  - see the v2_venues_{VENUE_ID}_nextvenues parameters list
+- intent: get_api_v2_venues_{VENUE_ID}_hours
+  examples:
+  - I want to get hours about venues
+  - Get hours of attractions
+  - I want to get v2_venues_{VENUE_ID}_hours
+  - I want to use v2_venues_{VENUE_ID}_hours
+- intent: parameters_list_v2_venues_{VENUE_ID}_hours
+  examples:
+  - I want to see the hours of venues parameters list
+  - hours parameters list
+  - I want to see the v2_venues_{VENUE_ID}_hours parameters list
+  - see the v2_venues_{VENUE_ID}_hours parameters list
+- intent: get_api_v2_venues_{VENUE_ID}_tips
+  examples:
+  - I want to get tips about venues
+  - Get tips of attractions
+  - I want to get v2_venues_{VENUE_ID}_tips
+  - I want to use v2_venues_{VENUE_ID}_tips
+- intent: parameters_list_v2_venues_{VENUE_ID}_tips
+  examples:
+  - I want to see the tips of venues parameters list
+  - tips parameters list
+  - I want to see the v2_venues_{VENUE_ID}_tips parameters list
+  - see the v2_venues_{VENUE_ID}_tips parameters list
+- intent: get_api_detailsVenue
+  examples:
+  - I want to get detailed information about venues
+  - Get details of attractions
+- intent: parameters_list_detailsVenue
+  examples:
+  - I want to see the details of venues parameters list
+  - details parameters list
+- intent: inform
+  examples:
+  - '[RQQRFNZSMYRZDWCAQFC5RNAM0SWIAONSWWRYCR2PJXW5TQXR](client_id)'
+  - '[UGUD420J2ASQC3NZXQIFSPHFFK24GQDOWBD0LNT3OVMV4VZ2](client_secret)'
+  - '[20180323](v)'
+  - '[25.129253,121.736299](ll)'
+  - '[5a7bc15e2347246d52fb7cee](VENUE_ID)'
+  - '[4c0235a8187ec9282defb37b](VENUE_ID)'
+- intent: auto_get_location
+  examples:
+  - Latitude of my current location is [25.130486599999998](auto_latitude), longitude
+    of my current location is [121.73195779999999](auto_longitude)
+  - Longitude is [121.736299](auto_longitude), latitude is [25.129253](auto_latitude)
+version: '2.0'

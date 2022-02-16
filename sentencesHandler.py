@@ -1,4 +1,4 @@
-import yaml
+import oyaml as yaml # for ordered yaml file
 import statistics
 from itertools import product
 from xmlrpc.client import boolean
