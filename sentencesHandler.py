@@ -1,3 +1,5 @@
+import json
+from collections import OrderedDict
 import oyaml as yaml # for ordered yaml file
 import statistics
 from itertools import product
@@ -16,19 +18,24 @@ class SentencesHandler:
     
     
     # 取得生成的 nlu
-    def get_nlu(self, data) -> yaml:
+    def get_nlu(self, data) -> json:
         data = yaml.load(data, Loader=yaml.FullLoader)
+        new_nlus = list()
         for nlu in data['nlu']:
             # intent 若為 inform 或 auto_get_location 不需要處裡
             if (nlu['intent'] == 'inform' or nlu['intent'] == 'auto_get_location'):
+                new_nlus.append(nlu)
                 continue
             else:
-                self.add_by_wordnet(nlu)
-        return yaml.dump(data, default_flow_style=False)
+                new_nlus.append(self.add_by_wordnet(nlu))
+        
+        data['nlu'] = new_nlus
+        return json.dumps(data, sort_keys=False)
 
 
     # 增加每個意圖的訓練語句
-    def add_by_wordnet(self, nlu) -> None:
+    def add_by_wordnet(self, nlu) -> OrderedDict:
+        new_nlu = OrderedDict()
         examples = list()  # 先暫存到這裡，之後再更新到原始資料中
         for sentence in nlu['examples']:
             synonyms_sentence = list()  # 由一個句子每個 token 的同義詞集合，組成的列表
@@ -59,7 +66,10 @@ class SentencesHandler:
                 if (self.remove_by_spacy(sentence, new_sentence)):
                     examples.append(new_sentence)
 
-        nlu['examples'] = examples
+        # nlu['examples'] = examples
+        new_nlu['intent'] = nlu['intent']
+        new_nlu['examples'] = examples
+        return new_nlu
 
 
     # 移除掉與原句差異過大的新句子
