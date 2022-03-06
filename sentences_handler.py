@@ -16,6 +16,7 @@ class SentencesHandler:
         nltk.download('wordnet')
         # nltk.download('averaged_perceptron_tagger')  # for tokenizing
         nltk.download('punkt') # for tokenizing
+        nltk.download('omw-1.4')
         self.nlp = spacy.load("en_core_web_lg")
 
     # 取得生成的 nlu
@@ -25,8 +26,8 @@ class SentencesHandler:
         new_nlus = list()
         for nlu in data['nlu']:
             # intent 若為 inform 或 auto_get_location 不需要處裡
-            # if (nlu['intent'] == 'inform' or nlu['intent'] == 'auto_get_location'):
-            if (nlu['intent'] == 'inform'):
+            if (nlu['intent'] == 'inform' or nlu['intent'] == 'auto_get_location'):
+            # if (nlu['intent'] == 'inform'):
                 new_nlus.append(nlu)
                 continue
             else:
@@ -61,8 +62,8 @@ class SentencesHandler:
                             # 評估新產生的同義詞與原始的 token 的相似度，利用笛卡爾乘積交叉比較兩組同義詞的相似度，並計算平均值
                             mean = statistics.mean(
                                 (wn.wup_similarity(s1, s2) or 0) for s1, s2 in product(allsyns1, allsyns2))
-                            # if mean > 0.1:
-                            if (True):
+                            if mean > 0.4:
+                            # if (True):
                                 synonyms.add(synonym)
 
                 synonyms_sentence.append(synonyms)
@@ -79,8 +80,8 @@ class SentencesHandler:
                     #     new_sentence += word + ' '
                 
                 new_sentence = ' '.join(word for word in sentence_word_list)
-                # if (self.remove_by_spacy(sentence, new_sentence)):
-                if (True):
+                if (self.remove_by_spacy(sentence, new_sentence)):
+                # if (True):
                     examples.append(new_sentence)
 
         # nlu['examples'] = examples
@@ -92,4 +93,4 @@ class SentencesHandler:
 
     def remove_by_spacy(self, pre_sentence, new_sentence) -> boolean:
         score = self.nlp(pre_sentence).similarity(self.nlp(new_sentence))
-        return score > 0.9
+        return score > 0.2
