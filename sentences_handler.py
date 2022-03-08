@@ -7,6 +7,7 @@ from xmlrpc.client import boolean
 
 from nltk.corpus import wordnet as wn
 import nltk
+from nltk.tokenize import SpaceTokenizer
 
 import spacy
 
@@ -14,7 +15,7 @@ import spacy
 class SentencesHandler:
     def __init__(self) -> None:
         nltk.download('wordnet')
-        # nltk.download('averaged_perceptron_tagger')  # for tokenizing
+        nltk.download('averaged_perceptron_tagger')  # for tokenizing
         nltk.download('punkt') # for tokenizing
         nltk.download('omw-1.4')
         self.nlp = spacy.load("en_core_web_lg")
@@ -44,6 +45,11 @@ class SentencesHandler:
 
         for sentence in nlu['examples'].split("\n"):
             synonyms_sentence = list()  # 由一個句子每個 token 的同義詞集合，組成的列表
+            
+            # 也許可以這樣斷詞
+            # tk = SpaceTokenizer()
+            # tk.tokenize(sentence)
+            
             for token in nltk.word_tokenize(sentence):
                 synonyms = set()  # 每個 token 的同義詞集合
                 synonyms.add(token)  # 同義詞集合加入原始的 token
@@ -51,6 +57,8 @@ class SentencesHandler:
                 if (token == 'I'):  # I 個別處理
                     synonyms.add('i')
                 elif (token.isdigit()): # 數字不處理
+                    pass
+                elif (token.is_stop == False): # stopwords 跳過不處理
                     pass
                 else:
                     synsets = wn.synsets(token, pos=(wn.NOUN, wn.VERB))
@@ -62,7 +70,7 @@ class SentencesHandler:
                             # 評估新產生的同義詞與原始的 token 的相似度，利用笛卡爾乘積交叉比較兩組同義詞的相似度，並計算平均值
                             mean = statistics.mean(
                                 (wn.wup_similarity(s1, s2) or 0) for s1, s2 in product(allsyns1, allsyns2))
-                            if mean > 0.4:
+                            if mean > 0.36:
                             # if (True):
                                 synonyms.add(synonym)
 
@@ -93,4 +101,4 @@ class SentencesHandler:
 
     def remove_by_spacy(self, pre_sentence, new_sentence) -> boolean:
         score = self.nlp(pre_sentence).similarity(self.nlp(new_sentence))
-        return score > 0.2
+        return score > 0.9
