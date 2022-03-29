@@ -26,13 +26,17 @@ class SentencesHandler:
         data = yaml.load(data, Loader=yaml.FullLoader)
         new_nlus = list()
         for nlu in data['nlu']:
-            # intent 若為 inform 或 auto_get_location 不需要處裡
-            if (nlu['intent'] == 'inform' or nlu['intent'] == 'auto_get_location'):
-                # if (nlu['intent'] == 'inform'):
+            # 有可能會有 intent 以外的 key
+            try:
+                # intent 若為 inform 或 auto_get_location 不需要處裡
+                if (nlu['intent'] == 'inform' or nlu['intent'] == 'auto_get_location'):
+                    # if (nlu['intent'] == 'inform'):
+                    new_nlus.append(nlu)
+                    continue
+                else:
+                    new_nlus.append(self.add_by_wordnet(nlu))
+            except:
                 new_nlus.append(nlu)
-                continue
-            else:
-                new_nlus.append(self.add_by_wordnet(nlu))
 
         data['nlu'] = new_nlus
         return json.dumps(data, sort_keys=False)
@@ -98,4 +102,4 @@ class SentencesHandler:
 
     def remove_by_spacy(self, pre_sentence, new_sentence) -> boolean:
         score = self.nlp(pre_sentence).similarity(self.nlp(new_sentence))
-        return score > 0.65
+        return score > 0.7
