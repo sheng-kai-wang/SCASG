@@ -6,6 +6,7 @@ import spacy
 class botSwaggerHandler:
     def __init__(self) -> None:
         self.nlp = spacy.load("en_core_web_lg")  # for tokenizing
+        self.cohesion_too_low_list = list()
         self.coupling_too_high_list = list()
 
     def check_sentences(self, data) -> json:
@@ -60,11 +61,11 @@ class botSwaggerHandler:
     # 挑出不同 intent 裡 coupling 較高的句子
     def check_intent_coupling(self, examples):
         # 將各個 intent 的所有句子 全部串接成一句 總共十句 兩兩互相比較
-        compare_list = list()  # 裝上述那些句子的 list
+        compare_list = list() # 裝上述那些句子的 list
         for sentences in examples:
             spliced_sentence = ''
             for sentence in sentences:
-                spliced_sentence += sentence  # 串接成一句
+                spliced_sentence += sentence # 串接成一句
             compare_list.append(spliced_sentence)
 
         print('compare_list', compare_list)
@@ -73,5 +74,5 @@ class botSwaggerHandler:
         for base_compare in compare_list:
             for to_be_compared in compare_list:
                 similarity_list.append(
-                    self.nlp(base_compare).similarity(self.nlp(to_be_compared)))  # 兩兩互相比較相似度
+                    self.nlp(base_compare).similarity(self.nlp(to_be_compared))) # 兩兩互相比較相似度
         print('similarity_list', similarity_list)
