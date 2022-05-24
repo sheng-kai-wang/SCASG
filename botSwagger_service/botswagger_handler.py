@@ -39,9 +39,23 @@ class BotSwaggerHandler:
             print('[new_similarity_dict]', new_similarity_dict)
             # 將相同 intent 的語句的相似度相加
             intent_sum_dict = defaultdict(lambda: 0.0)
+            # current_intent_id = ''
+            # times = 0
             for sentence_id in new_similarity_dict:
+                # # 跳過自己
+                # if sentence_id == query_sentence_id:
+                #     print(sentence_id, 'continue ========================')
+                #     continue
                 intent_id = sentence_id.split('-')[0]
+                # # 取算術平均
+                # if intent_id != current_intent_id:
+                #     current_intent_id = intent_id
+                #     if times != 0:
+                #         intent_sum_dict[str(int(intent_id)-1)] /= times
+                #     times = 0
+                # times += 1
                 intent_sum_dict[intent_id] += new_similarity_dict[sentence_id]
+            print('intent_sum_dict:', intent_sum_dict)
             # 如果有 intent 的相似度總和，高於查詢 intent 的相似度總和，則加到 coupling_too_high_dict 裡面
             query_intent_id = query_sentence_id.split('-')[0]
             query_intent_sum = intent_sum_dict[query_intent_id]

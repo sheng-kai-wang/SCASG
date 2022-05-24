@@ -22,7 +22,7 @@ class WordnetIncreaser:
                     synonym_nlp = self.nlp(synonym)
                     if token_nlp.vector_norm and synonym_nlp.vector_norm:
                         score = token_nlp.similarity(synonym_nlp)
-                        if score > 0.3:
+                        if score > 0.6:
                             # lemmatization and to lower case
                             synonym = lemmatizer.lemmatize(synonym.lower())
                             token_synonym_set.add(synonym)
