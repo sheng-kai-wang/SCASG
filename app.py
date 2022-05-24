@@ -4,6 +4,9 @@ from botSwagger_service.botswagger_handler import BotSwaggerHandler
 
 app = Flask(__name__)
 
+sentences_handler = SentencesHandler()
+botswagger_handler = BotSwaggerHandler()
+
 
 @app.route('/', methods=['GET'])
 def introduction():
@@ -12,12 +15,12 @@ def introduction():
 
 @app.route('/generateSentences', methods=['POST'])
 def generateSentences():
-    return SentencesHandler().get_nlu(request.data)
+    return sentences_handler.get_nlu(request.data)
 
 
 @app.route('/preprocessBotSwagger', methods=['POST'])
 def preprocessBotSwagger():
-    return BotSwaggerHandler().check_sentences(request.data)
+    return botswagger_handler.check_sentences(request.data)
 
 
 if __name__ == '__main__':

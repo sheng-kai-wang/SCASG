@@ -1,10 +1,9 @@
 from nltk.corpus import wordnet as wn
-import spacy
 
 
 class WordnetIncreaser:
-    def __init__(self, token_dict, lemmatizer) -> None:
-        self.nlp = spacy.load("en_core_web_lg")
+    def __init__(self, token_dict, lemmatizer, nlp) -> None:
+        self.nlp = nlp
         self.token_dict = token_dict
         self.synonym_dict = self.__get_synonym_dict(lemmatizer)
         self.updated_token_dict = self.__update_index()
@@ -23,7 +22,7 @@ class WordnetIncreaser:
                     synonym_nlp = self.nlp(synonym)
                     if token_nlp.vector_norm and synonym_nlp.vector_norm:
                         score = token_nlp.similarity(synonym_nlp)
-                        if score > 0.6:
+                        if score > 0.3:
                             # lemmatization and to lower case
                             synonym = lemmatizer.lemmatize(synonym.lower())
                             token_synonym_set.add(synonym)
@@ -32,6 +31,7 @@ class WordnetIncreaser:
             if len(token_synonym_set) != 0:
                 synonym_dict[token] = token_synonym_set
 
+        print('[synonym_dict]', synonym_dict)
         return synonym_dict
 
     def __update_index(self) -> dict:
@@ -73,6 +73,7 @@ class WordnetIncreaser:
                     # 新舊 list 相加
                     self.__update_token_list(updated_token_dict, synonym, new_list)
 
+        print('[updated_token_dict]', updated_token_dict)
         return updated_token_dict
 
     def __update_document_node_weight(self, token, synonym, document_node) -> None:

@@ -1,7 +1,5 @@
 import math
 from collections import defaultdict
-# import statistics
-# from itertools import product
 
 # import WordNet
 import nltk
