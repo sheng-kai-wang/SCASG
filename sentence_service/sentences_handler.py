@@ -68,11 +68,9 @@ class SentencesHandler:
                         for synset in synsets:
                             for synonym in synset.lemma_names():
                                 allsyns1 = set(ss for ss in wn.synsets(word))
-                                allsyns2 = set(
-                                    ss for ss in wn.synsets(synonym))
+                                allsyns2 = set(ss for ss in wn.synsets(synonym))
                                 # 評估新產生的同義詞與原始的 token 的相似度，利用笛卡爾乘積交叉比較兩組同義詞的相似度，並計算平均值
-                                mean = statistics.mean(
-                                    (wn.wup_similarity(s1, s2) or 0) for s1, s2 in product(allsyns1, allsyns2))
+                                mean = statistics.mean((wn.wup_similarity(s1, s2) or 0) for s1, s2 in product(allsyns1, allsyns2))
                                 if mean > 0.3:
                                     # if (True):
                                     synonyms.add(synonym)
