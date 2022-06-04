@@ -25,7 +25,7 @@ class BotSwaggerHandler:
 
     def check_sentences(self, data) -> json:
         coupling_too_high_dict = defaultdict(list)
-        nlu_dict = self.__parse_botswagger(data)
+        nlu_dict = self._parse_botswagger(data)
         lemmatizer = nltk.stem.WordNetLemmatizer()
         token_dict = IndexBuilder(nlu_dict, lemmatizer).get_token_dict()
         token_dict = WordnetIncreaser(token_dict, lemmatizer, self.nlp).get_updated_token_dict()
@@ -34,7 +34,7 @@ class BotSwaggerHandler:
         spacy_increaser = SpacyIncreaser(nlu_dict, self.nlp)
 
         for query_sentence_id in nlu_dict:
-            new_similarity_dict = self.__get_tfidf_spacy_similarity_dict(cosine_similarity_calculator, spacy_increaser, query_sentence_id)
+            new_similarity_dict = self._get_tfidf_spacy_similarity_dict(cosine_similarity_calculator, spacy_increaser, query_sentence_id)
             print(query_sentence_id, '===============================================')
             print('[new_similarity_dict]', new_similarity_dict)
             # 將相同 intent 的語句的相似度相加
@@ -74,7 +74,7 @@ class BotSwaggerHandler:
         print('coupling_too_high_dict:', coupling_too_high_dict)
         return coupling_too_high_dict
 
-    def __parse_botswagger(self, data) -> dict:
+    def _parse_botswagger(self, data) -> dict:
         data = json.loads(data)
         nlu_data = jsonpath.jsonpath(data, self.JSONPATH_TO_NLU)
         nlu_dict = dict()
@@ -84,7 +84,7 @@ class BotSwaggerHandler:
                 nlu_dict[doc_id] = sentence
         return nlu_dict
 
-    def __get_tfidf_spacy_similarity_dict(self, cosine_similarity_calculator, spacy_increaser, query_sentence_id) -> dict:
+    def _get_tfidf_spacy_similarity_dict(self, cosine_similarity_calculator, spacy_increaser, query_sentence_id) -> dict:
         new_similarity_dict = dict()
         tfidf_similarity_dict = cosine_similarity_calculator.get_tfidf_similarity_dict(query_sentence_id)
         spacy_similarity_dict = spacy_increaser.get_spacy_similarity_dict(query_sentence_id)
