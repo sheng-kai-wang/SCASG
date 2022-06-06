@@ -7,13 +7,14 @@ class WordnetIncreaser:
     def __init__(self, token_dict, lemmatizer, nlp) -> None:
         self.nlp = nlp
         self.token_dict = token_dict
-        self.synonym_dict = self.__get_synonym_dict(lemmatizer)
-        self.updated_token_dict = self.__update_index()
+        self.synonym_dict = self._get_synonym_dict(lemmatizer)
+        self.updated_token_dict = self._update_index()
 
     def get_updated_token_dict(self) -> dict:
+        # print('[updated_token_dict]', self.updated_token_dict)
         return self.updated_token_dict
 
-    def __get_synonym_dict(self, lemmatizer) -> dict:
+    def _get_synonym_dict(self, lemmatizer) -> dict:
         synonym_dict = dict()
         for token in self.token_dict:
             token_synonym_set = set()
@@ -35,7 +36,7 @@ class WordnetIncreaser:
                     synonym_nlp = self.nlp(synonym)
                     if token_nlp.vector_norm and synonym_nlp.vector_norm:
                         score = token_nlp.similarity(synonym_nlp)
-                        if score > 0.5:
+                        if score > 1.0:
                             # lemmatization and to lower case
                             synonym = lemmatizer.lemmatize(synonym.lower())
                             token_synonym_set.add(synonym)
@@ -44,10 +45,10 @@ class WordnetIncreaser:
             if len(token_synonym_set) != 0:
                 synonym_dict[token] = token_synonym_set
 
-        print('[synonym_dict]', synonym_dict)
+        # print('[synonym_dict]', synonym_dict)
         return synonym_dict
 
-    def __update_index(self) -> dict:
+    def _update_index(self) -> dict:
         updated_token_dict = self.token_dict
 
         for token in self.synonym_dict:
@@ -58,7 +59,7 @@ class WordnetIncreaser:
                     updated_token_dict[synonym] = updated_token_dict[token]
                     for document_node in updated_token_dict[synonym][1:]:
                         # weight 重新計算
-                        self.__update_document_node_weight(token, synonym, document_node)
+                        self._update_document_node_weight(token, synonym, document_node)
                     # 將 key 的名稱加上 *
                     updated_token_dict['*' + synonym] = updated_token_dict.pop(synonym)
 
@@ -86,20 +87,19 @@ class WordnetIncreaser:
                     new_list = updated_token_dict[token]
                     for document_node in new_list[1:]:  # 跳過 statistics_node
                         # weight 重新計算
-                        self.__update_document_node_weight(token, synonym, document_node)
+                        self._update_document_node_weight(token, synonym, document_node)
                     # 新舊 list 相加
-                    self.__update_token_list(updated_token_dict, synonym, new_list)
+                    self._update_token_list(updated_token_dict, synonym, new_list)
                     # 將 key 的名稱加上 *
                     updated_token_dict['*' + synonym] = updated_token_dict.pop(synonym)
 
-        print('[updated_token_dict]', updated_token_dict)
         return updated_token_dict
 
-    def __update_document_node_weight(self, token, synonym, document_node) -> None:
+    def _update_document_node_weight(self, token, synonym, document_node) -> None:
         similarity = self.nlp(token).similarity(self.nlp(synonym))
         document_node['weight'] *= similarity
 
-    def __update_token_list(self, updated_token_dict, synonym, new_list) -> None:
+    def _update_token_list(self, updated_token_dict, synonym, new_list) -> None:
         for document_node in updated_token_dict[synonym][1:]:
             document_node_match = 0
             for new_document_node in new_list[1:]:

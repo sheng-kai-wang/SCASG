@@ -1,5 +1,6 @@
 import math
 from collections import defaultdict
+import string
 
 # import WordNet
 import nltk
@@ -8,15 +9,17 @@ import nltk
 class IndexBuilder:
     def __init__(self, nlu_dict, lemmatizer) -> None:
         self.lemmatizer = lemmatizer
-        self.token_dict = self.__build_index(nlu_dict)
-        self.token_dict = self.__calculate_weight(nlu_dict, self.token_dict)
+        self.token_dict = self._build_index(nlu_dict)
+        self.token_dict = self._calculate_weight(nlu_dict, self.token_dict)
 
     def get_token_dict(self) -> dict:
+        # print('[token_dict]', self.token_dict)
         return self.token_dict
 
-    def __build_index(self, nlu_dict) -> dict:
+    def _build_index(self, nlu_dict) -> dict:
         token_dict = defaultdict(list)
         stop_words = set(nltk.corpus.stopwords.words('english'))
+        punctuation = set(string.punctuation)
 
         for sentence_id in nlu_dict:
             sentence = nlu_dict[sentence_id]
@@ -25,6 +28,8 @@ class IndexBuilder:
             tokens = [w for w in tokens if w not in stop_words]
             # lemmatization
             tokens = [self.lemmatizer.lemmatize(w) for w in tokens]
+            # remove punctuation
+            tokens = [w for w in tokens if w not in punctuation]
 
             for token in tokens:
                 token = token.strip('\n').strip()
@@ -60,7 +65,7 @@ class IndexBuilder:
 
         return token_dict
 
-    def __calculate_weight(self, nlu_dict, token_dict) -> dict:
+    def _calculate_weight(self, nlu_dict, token_dict) -> dict:
         for token in token_dict:
             for document_node in token_dict[token][1:]:
                 # (1 + log10(tf)) * log10(N/df)

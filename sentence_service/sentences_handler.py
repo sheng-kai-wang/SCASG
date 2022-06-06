@@ -36,7 +36,7 @@ class SentencesHandler:
                     new_nlus.append(nlu)
                     continue
                 else:
-                    new_nlus.append(self.__add_by_wordnet(nlu))
+                    new_nlus.append(self._add_by_wordnet(nlu))
             except:
                 new_nlus.append(nlu)
 
@@ -45,7 +45,7 @@ class SentencesHandler:
 
     # 增加每個意圖的訓練語句
 
-    def __add_by_wordnet(self, nlu) -> OrderedDict:
+    def _add_by_wordnet(self, nlu) -> OrderedDict:
         new_nlu = OrderedDict()
         examples = list()  # 先暫存到這裡，之後再更新到原始資料中
 
@@ -89,7 +89,7 @@ class SentencesHandler:
                 #     new_sentence += word + ' '
 
                 new_sentence = ' '.join(word for word in sentence_word_list)
-                if (self.__remove_by_spacy(sentence, new_sentence)):
+                if (self._remove_by_spacy(sentence, new_sentence)):
                     # if (True):
                     examples.append(new_sentence)
 
@@ -100,6 +100,6 @@ class SentencesHandler:
 
     # 移除掉與原句差異過大的新句子
 
-    def __remove_by_spacy(self, pre_sentence, new_sentence) -> boolean:
+    def _remove_by_spacy(self, pre_sentence, new_sentence) -> boolean:
         score = self.nlp(pre_sentence).similarity(self.nlp(new_sentence))
         return score > 0.7
