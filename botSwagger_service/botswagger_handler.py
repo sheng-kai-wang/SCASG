@@ -25,7 +25,10 @@ class BotSwaggerHandler:
 
     def check_sentences(self, data) -> json:
         coupling_too_high_dict = defaultdict(list)
-        nlu_dict = self._parse_botswagger(data)
+        nlu_data = self._parse_botswagger(data)
+        nlu_dict = self._get_nlu_dict(nlu_data)
+        intent_dict = self._get_intent_dict(nlu_data)
+        
         lemmatizer = nltk.stem.WordNetLemmatizer()
         token_dict = IndexBuilder(nlu_dict, lemmatizer).get_token_dict()
         original_token_dict = token_dict.copy() # 內容複製一份給其他變數存
@@ -33,7 +36,7 @@ class BotSwaggerHandler:
         updated_token_dict = WordnetIncreaser(token_dict, lemmatizer, self.nlp).get_updated_token_dict()
 
         # print('[updated_token_dict]', updated_token_dict)
-        cosine_similarity_calculator = CosineSimilarityCalculator(original_token_dict, updated_token_dict, nlu_dict)
+        cosine_similarity_calculator = CosineSimilarityCalculator(original_token_dict, updated_token_dict, nlu_dict, intent_dictZ)
         spacy_increaser = SpacyIncreaser(nlu_dict, self.nlp)
 
         for query_sentence_id in nlu_dict:
@@ -42,21 +45,8 @@ class BotSwaggerHandler:
             # print('[new_similarity_dict]', new_similarity_dict)
             # 將相同 intent 的語句的相似度相加
             intent_sum_dict = defaultdict(lambda: 0.0)
-            # current_intent_id = ''
-            # times = 0
             for sentence_id in new_similarity_dict:
-                # # 跳過自己
-                # if sentence_id == query_sentence_id:
-                #     print(sentence_id, 'continue ========================')
-                #     continue
                 intent_id = sentence_id.split('-')[0]
-                # # 取算術平均
-                # if intent_id != current_intent_id:
-                #     current_intent_id = intent_id
-                #     if times != 0:
-                #         intent_sum_dict[str(int(intent_id)-1)] /= times
-                #     times = 0
-                # times += 1
                 intent_sum_dict[intent_id] += new_similarity_dict[sentence_id]
             # print('intent_sum_dict:', intent_sum_dict)
             # 如果有 intent 的相似度總和，高於查詢 intent 的相似度總和，則加到 coupling_too_high_dict 裡面
@@ -80,12 +70,21 @@ class BotSwaggerHandler:
     def _parse_botswagger(self, data) -> dict:
         data = json.loads(data)
         nlu_data = jsonpath.jsonpath(data, self.JSONPATH_TO_NLU)
+        return nlu_data
+
+    def _get_nlu_dict(self, nlu_data) -> dict:
         nlu_dict = dict()
         for intent_id, intent in enumerate(nlu_data):
             for sentence_id, sentence in enumerate(intent):
                 doc_id = str(intent_id+1) + '-' + str(sentence_id+1)
                 nlu_dict[doc_id] = sentence
         return nlu_dict
+    
+    def _get_intent_dict(self, nlu_data) -> dict:
+        intent_dict = defaultdict(str)
+        for intent_id, intent in enumerate(nlu_data):
+            intent_dict[intent_id] += intent
+        return intent_dict
 
     def _get_tfidf_spacy_similarity_dict(self, cosine_similarity_calculator, spacy_increaser, query_sentence_id) -> dict:
         new_similarity_dict = dict()
