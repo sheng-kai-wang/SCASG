@@ -71,16 +71,16 @@ class WordnetIncreaser:
                     #     updated_token_dict['*' + synonym] = updated_token_dict[token]  # 擴充後的 token 跟原始的 token 重複了
                     #     for document_node in updated_token_dict['*' + synonym][1:]:
                     #         # weight 重新計算
-                    #         self.__update_document_node_weight(token, synonym, document_node)
+                    #         self._update_document_node_weight(token, synonym, document_node)
 
                     # else:  # 不是第一次出現
                     #     new_list = updated_token_dict[token]
                     #     for document_node in new_list[1:]:  # 跳過 statistics_node
                     #         # weight 重新計算
-                    #         self.__update_document_node_weight(token, synonym, document_node)
+                    #         self._update_document_node_weight(token, synonym, document_node)
                     #     # 新舊 list 相加
                     #     synonym = '*' + synonym
-                    #     self.__update_token_list(updated_token_dict, synonym, new_list)
+                    #     self._update_token_list(updated_token_dict, synonym, new_list)
 
                 # token 存在，屬於新生成的 list
                 else:
