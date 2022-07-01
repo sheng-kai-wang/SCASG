@@ -36,7 +36,7 @@ class WordnetIncreaser:
                     synonym_nlp = self.nlp(synonym)
                     if token_nlp.vector_norm and synonym_nlp.vector_norm:
                         score = token_nlp.similarity(synonym_nlp)
-                        if score > 1.0:
+                        if score > 0.8:
                             # lemmatization and to lower case
                             synonym = lemmatizer.lemmatize(synonym.lower())
                             token_synonym_set.add(synonym)
@@ -45,7 +45,7 @@ class WordnetIncreaser:
             if len(token_synonym_set) != 0:
                 synonym_dict[token] = token_synonym_set
 
-        # print('[synonym_dict]', synonym_dict)
+        print('[synonym_dict]', synonym_dict)
         return synonym_dict
 
     def _update_index(self) -> dict:
