@@ -37,7 +37,7 @@ class BotSwaggerHandler:
         cosine_similarity_calculator = CosineSimilarityCalculator(original_token_dict, updated_token_dict, nlu_dict)
         spacy_increaser = SpacyIncreaser(nlu_dict, self.nlp)
 
-        self._show_average_similarity_dict(nlu_dict, cosine_similarity_calculator, spacy_increaser)
+        # self._show_average_similarity_dict(nlu_dict, cosine_similarity_calculator, spacy_increaser)
 
         for query_sentence_id in nlu_dict:
             new_similarity_dict = self._get_tfidf_spacy_similarity_dict(cosine_similarity_calculator, spacy_increaser, query_sentence_id)
@@ -75,7 +75,11 @@ class BotSwaggerHandler:
                                 max = new_similarity_dict[sentence_id]
                     for sentence_id in new_similarity_dict:
                         if new_similarity_dict[sentence_id] == max:
-                            coupling_too_high_dict[query_sentence_id].append(sentence_id)
+                            query_sentence_id_str = '[' + query_sentence_id + '] '
+                            query_sentence_id_str += nlu_dict[query_sentence_id]
+                            sentence_id_str = '[' + sentence_id + '] '
+                            sentence_id_str += nlu_dict[sentence_id]
+                            coupling_too_high_dict[query_sentence_id_str].append(sentence_id_str)
 
         # print('coupling_too_high_dict:', coupling_too_high_dict)
         return coupling_too_high_dict
@@ -101,41 +105,41 @@ class BotSwaggerHandler:
             new_similarity_dict[sentence_id] = (tfidf_similarity_dict[sentence_id]*2 + spacy_similarity_dict[sentence_id]) / 3
         return new_similarity_dict
     
-    def _show_average_similarity_dict(self, nlu_dict, cosine_similarity_calculator, spacy_increaser):
-        tfidf_sentence_average_similarity_dict = defaultdict(lambda: 0)
-        for query_sentence_id in nlu_dict:
-            tfidf_similarity_dict = cosine_similarity_calculator.get_tfidf_similarity_dict(query_sentence_id)
-            for sentence_id in tfidf_similarity_dict:
-                tfidf_sentence_average_similarity_dict[sentence_id] += tfidf_similarity_dict[sentence_id]
-        for sentence_id in tfidf_sentence_average_similarity_dict:
-            tfidf_sentence_average_similarity_dict[sentence_id] /= len(tfidf_sentence_average_similarity_dict)
-        print('[tfidf_sentence_average_similarity_dict]', tfidf_sentence_average_similarity_dict)
+    # def _show_average_similarity_dict(self, nlu_dict, cosine_similarity_calculator, spacy_increaser):
+    #     tfidf_sentence_average_similarity_dict = defaultdict(lambda: 0)
+    #     for query_sentence_id in nlu_dict:
+    #         tfidf_similarity_dict = cosine_similarity_calculator.get_tfidf_similarity_dict(query_sentence_id)
+    #         for sentence_id in tfidf_similarity_dict:
+    #             tfidf_sentence_average_similarity_dict[sentence_id] += tfidf_similarity_dict[sentence_id]
+    #     for sentence_id in tfidf_sentence_average_similarity_dict:
+    #         tfidf_sentence_average_similarity_dict[sentence_id] /= len(tfidf_sentence_average_similarity_dict)
+    #     print('[tfidf_sentence_average_similarity_dict]', tfidf_sentence_average_similarity_dict)
         
-        spacy_sentence_average_similarity_dict = defaultdict(lambda: 0)
-        for query_sentence_id in nlu_dict:
-            spacy_similarity_dict = spacy_increaser.get_spacy_similarity_dict(query_sentence_id)
-            for sentence_id in spacy_similarity_dict:
-                spacy_sentence_average_similarity_dict[sentence_id] += spacy_similarity_dict[sentence_id]
-        for sentence_id in spacy_sentence_average_similarity_dict:
-            spacy_sentence_average_similarity_dict[sentence_id] /= len(spacy_sentence_average_similarity_dict)
-        print('[spacy_sentence_average_similarity_dict]', spacy_sentence_average_similarity_dict)
+    #     spacy_sentence_average_similarity_dict = defaultdict(lambda: 0)
+    #     for query_sentence_id in nlu_dict:
+    #         spacy_similarity_dict = spacy_increaser.get_spacy_similarity_dict(query_sentence_id)
+    #         for sentence_id in spacy_similarity_dict:
+    #             spacy_sentence_average_similarity_dict[sentence_id] += spacy_similarity_dict[sentence_id]
+    #     for sentence_id in spacy_sentence_average_similarity_dict:
+    #         spacy_sentence_average_similarity_dict[sentence_id] /= len(spacy_sentence_average_similarity_dict)
+    #     print('[spacy_sentence_average_similarity_dict]', spacy_sentence_average_similarity_dict)
         
-        tfidf_intent_average_similarity_dict = defaultdict(lambda: 0)
-        len_dict = defaultdict(lambda: 0)
-        for sentence_id in nlu_dict:
-            intent_id = sentence_id.split('-')[0]
-            tfidf_intent_average_similarity_dict[intent_id] += tfidf_sentence_average_similarity_dict[sentence_id]
-            len_dict[intent_id] += 1 
-        for intent_id in tfidf_intent_average_similarity_dict:
-            tfidf_intent_average_similarity_dict[intent_id] /= len_dict[intent_id]
-        print('[tfidf_intent_average_similarity_dict]', tfidf_intent_average_similarity_dict)
+    #     tfidf_intent_average_similarity_dict = defaultdict(lambda: 0)
+    #     len_dict = defaultdict(lambda: 0)
+    #     for sentence_id in nlu_dict:
+    #         intent_id = sentence_id.split('-')[0]
+    #         tfidf_intent_average_similarity_dict[intent_id] += tfidf_sentence_average_similarity_dict[sentence_id]
+    #         len_dict[intent_id] += 1 
+    #     for intent_id in tfidf_intent_average_similarity_dict:
+    #         tfidf_intent_average_similarity_dict[intent_id] /= len_dict[intent_id]
+    #     print('[tfidf_intent_average_similarity_dict]', tfidf_intent_average_similarity_dict)
         
-        spacy_intent_average_similarity_dict = defaultdict(lambda: 0)
-        len_dict = defaultdict(lambda: 0)
-        for sentence_id in nlu_dict:
-            intent_id = sentence_id.split('-')[0]
-            spacy_intent_average_similarity_dict[intent_id] += spacy_sentence_average_similarity_dict[sentence_id]
-            len_dict[intent_id] += 1 
-        for intent_id in spacy_intent_average_similarity_dict:
-            spacy_intent_average_similarity_dict[intent_id] /= len_dict[intent_id]
-        print('[spacy_intent_average_similarity_dict]', spacy_intent_average_similarity_dict)
+    #     spacy_intent_average_similarity_dict = defaultdict(lambda: 0)
+    #     len_dict = defaultdict(lambda: 0)
+    #     for sentence_id in nlu_dict:
+    #         intent_id = sentence_id.split('-')[0]
+    #         spacy_intent_average_similarity_dict[intent_id] += spacy_sentence_average_similarity_dict[sentence_id]
+    #         len_dict[intent_id] += 1 
+    #     for intent_id in spacy_intent_average_similarity_dict:
+    #         spacy_intent_average_similarity_dict[intent_id] /= len_dict[intent_id]
+    #     print('[spacy_intent_average_similarity_dict]', spacy_intent_average_similarity_dict)
